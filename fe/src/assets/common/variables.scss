@@ -1,0 +1,28 @@
+@use "mixins";
+
+$sn-500: #5061d0;
+$sn-600: #4654ae;
+
+$ui-success-50: #ebf7ea;
+$ui-success-500: #33ab30;
+$ui-success-600: #2f8f2e;
+
+$ui-error-50: #fcece9;
+$ui-error-500: #e53f28;
+$ui-error-600: #bd3827;
+
+$ui-info-50: #e9f6fc;
+$ui-info-500: #47a4fa;
+$ui-info-600: #2687be;
+
+$neutral-100: #e0e1e5;
+$neutral-300: #b5b6c1;
+$neutral-500: #838598;
+$neutral-600: #6f7081;
+$neutral-700: #5b5c6a;
+$neutral-950: #292830;
+
+
+$standard-easing: cubic-bezier(0.4, 0.0, 0.2, 1);
+$incoming-easing: cubic-bezier(0.0, 0.0, 0.2, 1);
+$exiting-easing: cubic-bezier(0.4, 0.0, 1, 1);
