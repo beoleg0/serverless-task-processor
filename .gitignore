@@ -1,5 +1,5 @@
 .idea
 
-be/layer/nodejs/node_modules
+be/layer
 be/node_modules
 be/dist
