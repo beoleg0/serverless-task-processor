@@ -11,12 +11,6 @@ const entryPoints = [
   // Processing functions
   'src/functions/processing/processTask.ts',
   'src/functions/processing/dlqProcessor.ts',
-
-  // WebSocket functions
-  'src/functions/websocket/connect.ts',
-  'src/functions/websocket/default.ts',
-  'src/functions/websocket/disconnect.ts',
-  'src/functions/websocket/notifier.ts'
 ];
 
 // Create output directory

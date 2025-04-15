@@ -1,0 +1,39 @@
+@import "../common/variables";
+@import "../common/mixins";
+
+.button {
+  padding: rem(8px) rem(16px);
+  border-radius: 8px;
+  background: $sn-500;
+  color: $neutral-white;
+  text-decoration: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: rem(8px);
+  border: none;
+  font-size: rem(14px);
+  font-weight: 700;
+
+  &:disabled, &[disabled], &.disabled {
+    background: $neutral-100;
+    color: $neutral-300;
+    pointer-events: none;
+  }
+
+  &:not(:disabled):not([disabled]):not(.disabled) {
+    cursor: pointer;
+
+    &:hover {
+      background: $sn-600;
+    }
+
+    &:active {
+      background: $sn-600
+    }
+
+    &:focus-visible {
+      outline: $ui-info-500;
+    }
+  }
+}

@@ -1,0 +1,90 @@
+@import "variables";
+@import "mixins";
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.answer-form {
+  display: grid;
+  grid-template-rows: auto 1fr 1fr auto;
+  gap: rem(20px);
+  height: 100%;
+  position: relative;
+
+  @include tabletsAndLower {
+    gap: rem(12px);
+  }
+}
+
+.box {
+  background: $neutral-white;
+  box-shadow: 0 8px 24px 0 #33396914;
+  border-radius: 8px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: rem(60px);
+  gap: rem(20px);
+
+  @include tabletsAndLower {
+    padding: rem(20px);
+    gap: rem(8px);
+  }
+
+  &.answer {
+    grid-template-rows: auto auto;
+    place-content: center;
+  }
+
+  .counter {
+    justify-self: center;
+    font-weight: 400;
+    font-size: rem(12px);
+  }
+}
+
+.title-text {
+  font-weight: 700;
+  font-size: rem(20px);
+  text-transform: uppercase;
+  color: $sn-500;
+
+}
+
+.question-text {
+  font-weight: 400;
+  font-size: rem(20px);
+
+  @include tabletsAndLower {
+    font-size: rem(14px);
+  }
+}
+
+textarea {
+  border-radius: 8px;
+  padding: 12px 16px;
+  border: 1px solid $neutral-100;
+  font-weight: 400;
+  font-size: rem(14px);
+  resize: none;
+}
+
+.button-set {
+  margin: 0 rem(-20px) rem(-20px);
+  padding: rem(16px) rem(40px);
+  box-shadow: 0 8px 24px 0 #33396914;
+  display: flex;
+  justify-content: flex-end;
+
+  @include tabletsAndLower {
+    position: sticky;
+    bottom: 0;
+    background: $neutral-white;
+    justify-content: flex-start;
+
+    button {
+      width: 100%;
+    }
+  }
+}

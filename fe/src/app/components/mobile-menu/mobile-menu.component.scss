@@ -1,0 +1,43 @@
+@import "variables";
+@import "mixins";
+
+:host {
+  display: block;
+}
+
+.mobile-menu {
+  background: $neutral-white;
+  padding: rem(20px);
+  display: grid;
+  gap: rem(20px);
+  border-radius: 8px 8px 0 0;
+}
+
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: rem(16px);
+}
+
+.mobile-menu-list-item {
+  display: flex;
+  gap: rem(12px);
+  padding: rem(8px) rem(16px);
+
+  svg path {
+    stroke: $neutral-500;
+  }
+
+  font-weight: 400;
+  font-size: rem(14px);
+
+  &:hover {
+    svg path {
+      stroke: $sn-500;
+    }
+
+    color: $sn-500;
+  }
+}

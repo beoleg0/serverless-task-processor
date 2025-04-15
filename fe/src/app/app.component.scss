@@ -1,0 +1,58 @@
+@import "variables";
+@import "mixins";
+
+.container.main {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: rem(40px);
+  position: relative;
+
+  @include tabletsAndLower {
+    grid-template-columns: 1fr;
+    height: 100%;
+  }
+}
+
+.main-content-column {
+  background: $neutral-10;
+  padding: rem(20px);
+  border-radius: 8px;
+
+  @include tabletsAndLower {
+    padding: 0;
+    background: transparent;
+  }
+
+  &.task {
+    align-self: start;
+    position: sticky;
+    height: auto;
+    top: rem(40px);
+
+    @include tabletsAndLower {
+      position: static;
+      top: 0;
+      height: 100%
+    }
+  }
+
+  &.answers {
+    height: 100%;
+  }
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  filter: blur(20px);
+}
+
+.mobile-menu {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}

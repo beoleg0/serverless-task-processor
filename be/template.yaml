@@ -11,8 +11,6 @@ Globals:
         TASKS_TABLE: !Ref TasksTable
         TASK_QUEUE_URL: !Ref TaskQueue
         TASK_DLQ_URL: !Ref TaskDeadLetterQueue
-        CONNECTIONS_TABLE: !Ref WebSocketConnectionsTable
-        WEBSOCKET_API_ENDPOINT: !Sub "https://${WebSocketApi}.execute-api.${AWS::Region}.amazonaws.com/${WebSocketApiStage}"
 
 Resources:
   # Add this to your template.yaml
@@ -35,74 +33,6 @@ Resources:
         AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
         AllowOrigin: "'*'"
 
-  # WebSocket API for real-time status updates
-  WebSocketApi:
-    Type: AWS::ApiGatewayV2::Api
-    Properties:
-      Name: TaskStatusWebSocketApi
-      ProtocolType: WEBSOCKET
-      RouteSelectionExpression: "$request.body.action"
-
-  # WebSocket API Stage
-  WebSocketApiStage:
-    Type: AWS::ApiGatewayV2::Stage
-    Properties:
-      ApiId: !Ref WebSocketApi
-      StageName: Prod
-      DefaultRouteSettings:
-        ThrottlingBurstLimit: 100
-        ThrottlingRateLimit: 50
-
-  # WebSocket Routes
-  ConnectRoute:
-    Type: AWS::ApiGatewayV2::Route
-    Properties:
-      ApiId: !Ref WebSocketApi
-      RouteKey: $connect
-      AuthorizationType: NONE
-      OperationName: ConnectRoute
-      Target: !Sub "integrations/${ConnectIntegration}"
-
-  DisconnectRoute:
-    Type: AWS::ApiGatewayV2::Route
-    Properties:
-      ApiId: !Ref WebSocketApi
-      RouteKey: $disconnect
-      AuthorizationType: NONE
-      OperationName: DisconnectRoute
-      Target: !Sub "integrations/${DisconnectIntegration}"
-
-  DefaultRoute:
-    Type: AWS::ApiGatewayV2::Route
-    Properties:
-      ApiId: !Ref WebSocketApi
-      RouteKey: $default
-      AuthorizationType: NONE
-      OperationName: DefaultRoute
-      Target: !Sub "integrations/${DefaultIntegration}"
-
-  # WebSocket Integrations
-  ConnectIntegration:
-    Type: AWS::ApiGatewayV2::Integration
-    Properties:
-      ApiId: !Ref WebSocketApi
-      IntegrationType: AWS_PROXY
-      IntegrationUri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebSocketConnectFunction.Arn}/invocations"
-
-  DisconnectIntegration:
-    Type: AWS::ApiGatewayV2::Integration
-    Properties:
-      ApiId: !Ref WebSocketApi
-      IntegrationType: AWS_PROXY
-      IntegrationUri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebSocketDisconnectFunction.Arn}/invocations"
-
-  DefaultIntegration:
-    Type: AWS::ApiGatewayV2::Integration
-    Properties:
-      ApiId: !Ref WebSocketApi
-      IntegrationType: AWS_PROXY
-      IntegrationUri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebSocketDefaultFunction.Arn}/invocations"
-
   # DynamoDB Tables
   TasksTable:
     Type: AWS::DynamoDB::Table
@@ -117,18 +47,6 @@ Resources:
           KeyType: HASH
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
-
-  WebSocketConnectionsTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: WebSocketConnectionsTable
-      BillingMode: PAY_PER_REQUEST
-      AttributeDefinitions:
-        - AttributeName: connectionId
-          AttributeType: S
-      KeySchema:
-        - AttributeName: connectionId
-          KeyType: HASH
 
   # SQS Queues
   TaskDeadLetterQueue:
@@ -185,21 +103,6 @@ Resources:
             Path: /tasks
             Method: get
 
-  SimpleTestFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: dist/functions/api/
-      Handler: simple.handler
-      Layers:
-        - !Ref DependenciesLayer
-      Events:
-        ApiEvent:
-          Type: Api
-          Properties:
-            RestApiId: !Ref ApiGateway
-            Path: /simple
-            Method: get
-
   # Lambda Processing Functions
   ProcessTaskFunction:
     Type: AWS::Serverless::Function
@@ -238,101 +141,13 @@ Resources:
             Queue: !GetAtt TaskDeadLetterQueue.Arn
             BatchSize: 1
 
-  # Lambda WebSocket Functions
-  WebSocketConnectFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: dist/functions/websocket/
-      Handler: connect.handler
-      Layers:
-        - !Ref DependenciesLayer
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref WebSocketConnectionsTable
-
-  WebSocketDisconnectFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: dist/functions/websocket/
-      Handler: disconnect.handler
-      Layers:
-        - !Ref DependenciesLayer
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref WebSocketConnectionsTable
-
-  WebSocketDefaultFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: dist/functions/websocket/
-      Handler: default.handler
-      Layers:
-        - !Ref DependenciesLayer
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref WebSocketConnectionsTable
-
-  TaskStatusNotifierFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: dist/functions/websocket/
-      Handler: notifier.handler
-      Layers:
-        - !Ref DependenciesLayer
-      Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref WebSocketConnectionsTable
-        - Statement:
-            - Effect: Allow
-              Action:
-                - 'execute-api:ManageConnections'
-              Resource: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/${WebSocketApiStage}/POST/@connections/*"
-      Events:
-        Stream:
-          Type: DynamoDB
-          Properties:
-            Stream: !GetAtt TasksTable.StreamArn
-            StartingPosition: LATEST
-            BatchSize: 1
-
-  # Lambda WebSocket Permissions
-  WebSocketConnectPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref WebSocketConnectFunction
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*/$connect"
-
-  WebSocketDisconnectPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref WebSocketDisconnectFunction
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*/$disconnect"
-
-  WebSocketDefaultPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref WebSocketDefaultFunction
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*/$default"
-
 Outputs:
   ApiEndpoint:
     Description: "API Gateway endpoint URL"
     Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod"
-  WebSocketEndpoint:
-    Description: "WebSocket endpoint URL for real-time status updates"
-    Value: !Sub "wss://${WebSocketApi}.execute-api.${AWS::Region}.amazonaws.com/${WebSocketApiStage}"
   TasksTable:
     Description: "DynamoDB table for tasks"
     Value: !Ref TasksTable
-  WebSocketConnectionsTable:
-    Description: "DynamoDB table for WebSocket connections"
-    Value: !Ref WebSocketConnectionsTable
   TaskQueue:
     Description: "SQS queue for task processing"
     Value: !Ref TaskQueue

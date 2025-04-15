@@ -1,0 +1,52 @@
+<div class="answers-table">
+
+  <div class="table-header">
+    <div>Task ID</div>
+    <div>Answer</div>
+    <div>Status</div>
+    <div>Retries</div>
+    <div>Error message</div>
+  </div>
+
+  <div *ngFor="let task of tasks$ | async; trackBy: trackByTaskId" class="table-row">
+    <div>{{ task.taskId }}</div>
+    <div>{{ task.answer }}</div>
+    <div>
+      <app-answer-status-chip [status]="task.status"></app-answer-status-chip>
+    </div>
+    <div>{{ task.retries }}</div>
+    <div>{{ task.errorMessage }}</div>
+  </div>
+
+
+</div>
+
+<div class="answers-table-mobile">
+
+  <app-header></app-header>
+
+  <div class="answers-list">
+
+    <div class="answer-item" *ngFor="let task of tasks$ | async; trackBy: trackByTaskId">
+      <div class="answer-item-block">
+        <div class="answer-item-label">Task ID</div>
+        <div class="answer-item-value">{{ task.taskId }}</div>
+      </div>
+
+      <app-answer-status-chip [status]="task.status"></app-answer-status-chip>
+
+      <div class="answer-item-block answer">
+        <div class="answer-item-label">Answer</div>
+        <div class="answer-item-value">{{ task.answer }}</div>
+      </div>
+
+      <div class="answer-item-block">
+        <div class="answer-item-label">Retries</div>
+        <div class="answer-item-value">{{ task.retries }}</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

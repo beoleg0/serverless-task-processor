@@ -1,0 +1,86 @@
+@import "mixins";
+@import "variables";
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.answers-table {
+  border-radius: 8px;
+  background: $neutral-white;
+  border: 1px solid $neutral-100;
+  height: 100%;
+
+  @include tabletsAndLower {
+    display: none;
+  }
+}
+
+.table-header, .table-row {
+  display: grid;
+  grid-template-columns: rem(100px) 1fr rem(200px) rem(100px) 1fr;
+
+  > div {
+    padding: rem(16px);
+    font-weight: 400;
+    font-size: rem(14px);
+    border-bottom: 1px solid $neutral-100;
+    display: grid;
+    align-items: center;
+  }
+}
+
+.table-header {
+  background: $neutral-10;
+}
+
+.table-row {
+  > div {
+    padding: rem(24px) rem(16px)
+  }
+}
+
+.answers-table-mobile {
+  display: none;
+  gap: rem(12px);
+
+  @include tabletsAndLower {
+    display: grid;
+  }
+}
+
+.answers-list {
+  display: grid;
+  gap: rem(12px);
+}
+
+.answer-item {
+  background: $neutral-white;
+  border: 1px solid $neutral-100;
+  padding: rem(16px);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: rem(12px);
+}
+
+.answer-item-block {
+  display: grid;
+  gap: rem(4px);
+
+  &.answer {
+    grid-column: span 2;
+  }
+}
+
+.answer-item-label {
+  font-weight: 400;
+  font-size: rem(12px);
+  color: $neutral-600
+}
+
+.answer-item-value {
+  font-weight: 400;
+  font-size: rem(14px);
+}

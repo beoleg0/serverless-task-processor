@@ -1,0 +1,30 @@
+@import "mixins";
+@import "variables";
+
+:host {
+  display: block;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: rem(8px);
+  padding: rem(4px) rem(24px);
+  border-radius: 4px;
+
+  &.pending, &.processing {
+    background: $ui-info-50;
+    color: $ui-info-500;
+  }
+
+  &.processed {
+    background: $ui-success-50;
+    color: $ui-success-500;
+  }
+
+  &.failed {
+    background: $ui-error-50;
+    color: $ui-error-500;
+  }
+}

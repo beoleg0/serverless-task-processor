@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap');
 
-@import "./assets/common/reset";
-@import "./assets/common/variables";
-@import "./assets/common/mixins";
+@import "assets/styles/common/reset";
+@import "assets/styles/common/variables";
+@import "assets/styles/common/mixins";
+@import "assets/styles/components/button";
 
 :root {
   --container-width: 1840px;
@@ -21,4 +22,27 @@ body {
   max-width: var(--container-width);
   width: 100%;
   padding: rem(40px);
+
+  @include tabletsAndLower {
+    padding: rem(20px);
+  }
+}
+
+.click-target-helper {
+  position: relative;
+
+  &::after {
+    --click-target-minimum: 44px;
+    --inset-by: min(
+      0px,
+      calc((100% - var(--click-target-minimum)) / 2)
+    );
+
+    content: "";
+    position: absolute;
+    top: var(--inset-by);
+    left: var(--inset-by);
+    right: var(--inset-by);
+    bottom: var(--inset-by);
+  }
 }

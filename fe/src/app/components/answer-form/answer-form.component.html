@@ -1,0 +1,28 @@
+<form class="answer-form" (ngSubmit)="onSubmit()" [formGroup]="form">
+
+  <app-header></app-header>
+
+  <div class="box answer">
+    <span class="title-text">Question:</span>
+
+    <p class="question-text">
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet animi architecto aspernatur beatae cumque dicta dolore eligendi ex
+      fugiat hic iusto laboriosam libero maiores minus molestiae nisi nostrum numquam omnis pariatur, perferendis quaerat quas quidem
+      ratione recusandae rem, repellat saepe similique, sunt tempora voluptatem! Animi at aut consequuntur culpa, mollitia quia vero!
+    </p>
+  </div>
+
+  <div class="box">
+    <!-- Error state can be added and textarea can be a separate component -->
+    <span class="title-text">Answer:</span>
+
+    <textarea formControlName="answer" placeholder="Enter your answer"></textarea>
+
+    <span class="counter">{{ answerLength$ | async }} / {{ MAX_ANSWER_LENGTH }}</span>
+  </div>
+
+  <div class="button-set">
+    <button [disabled]="form.invalid || (isSubmissionInProgress$$ | async)" class="button">Submit</button>
+  </div>
+
+</form>
